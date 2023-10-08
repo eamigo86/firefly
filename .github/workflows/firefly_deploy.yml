@@ -16,12 +16,12 @@ jobs:
       - name: Check out repository code
         uses: actions/checkout@v4
       - run: echo "💡 The ${{ github.repository }} repository has been cloned to the runner."
-      - name: Docker build and push
+      - name: Docker Build and Push
         run: |
           docker build -t ${{ secrets.DOCKER_REGISTRY_URL }}/firefly:${{ github.run_number }} .
           docker login ${{ secrets.DOCKER_REGISTRY_URL }} -u ${{ secrets.DOCKER_REGISTRY_USERNAME }} -p ${{ secrets.DOCKER_REGISTRY_PASSWORD }}
           docker push ${{ secrets.DOCKER_REGISTRY_URL }}/firefly:${{ github.run_number }}
-      - name: executing remote ssh commands using password
+      - name: Executing remote ssh commands using ssh key
         uses: appleboy/ssh-action@v1.0.0
         with:
           host: ${{ secrets.SERVER_IP }}
@@ -29,5 +29,4 @@ jobs:
           key: ${{ secrets.SERVER_SSH_PRIVATE_KEY }}
           command_timeout: 5m
           script: | 
-            whoami
-            ls -al
+            docker service update --image ${{ secrets.DOCKER_REGISTRY_URL }}/firefly:${{ github.run_number }} firefly_app --force
