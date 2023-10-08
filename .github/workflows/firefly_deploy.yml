@@ -35,4 +35,5 @@ jobs:
           key: ${{ secrets.SERVER_SSH_PRIVATE_KEY }}
           command_timeout: 5m
           script: | 
+            docker pull ${{ secrets.DOCKER_REGISTRY_URL }}/firefly:${{ github.run_number }}
             docker service update --image ${{ secrets.DOCKER_REGISTRY_URL }}/firefly:${{ github.run_number }} firefly_app --force
